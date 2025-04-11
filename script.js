@@ -53,11 +53,31 @@ function fetchForecastData(lat, lon) {
     });
 }
 
+function getWeatherIcon(condition) {
+  if (condition.includes('cloud')) {
+    return 'fas fa-cloud';
+  } else if (condition.includes('raind')) {
+    return 'fas fa-cloud-showers-heavy';
+  } else if (condition.includes('sun')) {
+    return 'fas fa-sun';
+  } else if (condition.includes('clear')) {
+    return 'fas fa-sun';
+  } else if (condition.includes('storm') || condition.includes('thunder')) {
+    return 'fas fa-bolt';
+  } else if (condition.includes('snow')) {
+    return 'fas fa-snowflake';
+  } else {
+    return 'fas fa-smog';
+  }
+
+}
+
 function displayCurrentWeather(data) {
   const { name, sys, main, weather } = data;
-
+  const condition = weather[0].main.toLowerCase();
+  const icon = getWeatherIcon(condition);
   currentWeatherDiv.innerHTML = `
-    <h2>${name}, ${sys.country}</h2>
+    <h2><i class="${icon}"></i>${name}, ${sys.country}</h2>
     <p><strong>Temperature:</strong> ${main.temp}°C</p>
     <p><strong>Condition:</strong> ${weather[0].description}</p>
   `;
@@ -69,11 +89,15 @@ function displayForecast(data) {
 
   list.forEach(item => {
     const date = new Date(item.dt_txt);
+    const condition = item.weather[0].main.toLowerCase();
+    const iconClass = getWeatherIcon(condition);
+
     forecastWeatherDiv.innerHTML += `
       <div class="forecast-item">
         <p><strong>${date.toDateString()}</strong></p>
+        <i class="${iconClass}"></i>
         <p>Temp: ${item.main.temp}°C</p>
-        <p>${item.weather[0].description}</p>
+        <p>${condition}</p>
       </div>
     `;
   });
